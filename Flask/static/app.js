@@ -11,31 +11,33 @@ function init() {
     console.log($('#chart-area').height())
     //margins
     var margin = {
-        top: 100,
+        top: 40,
         right: 40,
-        bottom: 100,
-        left: 120
+        bottom: 40,
+        left: 40
     };
 
     //chart area
     var chartWidth = svgWidth - margin.left - margin.right;
     var chartHeight = svgHeight - margin.top - margin.bottom;
+    console.log("chartheight:" + chartHeight)
+    console.log("chartWidth:" + chartWidth)
     var tHeight = svgHeight - 50
     var svg = d3.select("#chart-area")
         .append("svg")
         .attr("width", '100%')
         .attr("height", '100%')
-        .attr('viewBox','375 425 '+svgWidth +' '+tHeight )
+        .attr('viewBox','0 0 '+svgWidth +' '+tHeight )
         .attr('preserveAspectRatio','xMinYMin')
 
 
     var chartGroup = svg.append("g")
         .attr("id", "chart-group")
-        .attr("transform", "translate(" + Math.min(svgWidth,svgHeight) / 2 + "," + Math.min(svgWidth,svgHeight) / 2 + ")");
+        .attr("transform", "translate(40,40)");
 
     chartGroup.append("text")
-    .attr("y", 0 - 25)
-    .attr("x", 0 + margin.top)
+    .attr("y", -25)
+    .attr("x", 0)
     .attr("class", "topMenu")
     .attr("font-family", "Segoe UI Light")
     .attr("font-size", "2em")
@@ -47,8 +49,8 @@ function init() {
     .text("NBA")
 
     chartGroup.append("text")
-    .attr("y", 0 -25)
-    .attr("x", 0 + margin.top + 100)
+    .attr("y", -25)
+    .attr("x",100)
     .attr("class", "topMenu")
     .attr("font-family", "Segoe UI Light")
     .attr("font-size", "2em")
@@ -60,8 +62,8 @@ function init() {
     .text("NFL")
 
     chartGroup.append("text")
-    .attr("y", 0 -25)
-    .attr("x", 0 + margin.top + 200)
+    .attr("y", -25)
+    .attr("x", 200)
     .attr("class", "topMenu")
     .attr("font-family", "Segoe UI Light")
     .attr("font-size", "2em")
@@ -76,14 +78,14 @@ function init() {
     var year = ""
     var toggle = 'reg'
     var menuDict = [{'nba': {'years': [2012,2013,2014,2015,2016,2017],
-                                'offset': 100,
-                                'trianglex': 130},
+                                'offset': 140,
+                                'trianglex': 30},
                     'nfl': {'years': [2012,2013,2014,2015,2016,2017],
-                                'offset': 200,
-                                'trianglex': 230},
+                                'offset': 240,
+                                'trianglex': 130},
                     'mlb': {'years': [2012,2013,2014,2015,2016,2017],
-                                'offset': 300,
-                                'trianglex': 330}
+                                'offset': 340,
+                                'trianglex': 230}
                     }]
     console.log(menuDict[0]['nba'])
     var topMenu = d3.selectAll(".topMenu")
@@ -115,7 +117,13 @@ function init() {
         d3.selectAll(".topSubLine")
         .remove()
 
-        d3.selectAll(".triangle").remove()
+
+
+        d3.selectAll(".toggle-buttons")
+        .transition()
+        .duration(650)
+        .style("opacity", 0)
+        .remove()
 
 
         
@@ -125,12 +133,12 @@ function init() {
         x = menuDict[0][sport]['offset']
         years = menuDict[0][sport]['years']
         console.log(x)
-        ySpace = 20
+        ySpace = 25
         xSpace = 0
         years.forEach(year => {
             chartGroup.append("text")
             .attr("y", ySpace)
-            .attr("x", 7 + x + xSpace)
+            .attr("x", 10 + xSpace)
             .attr("class", "topSubMenu")
             .attr("font-family", "Segoe UI Light")
             .attr("font-size", "1.3em")
@@ -143,9 +151,9 @@ function init() {
             if (year != 2017) {
             chartGroup.append("line")
                 .attr("class", "topSubLine")
-                .attr("x1", x + xSpace + 65)
+                .attr("x1", xSpace + 67 )
                 .attr("y1", ySpace + 7)
-                .attr("x2", x + xSpace + 65)
+                .attr("x2", xSpace + 67)
                 .attr("y2", ySpace + 7)
                 .attr("stroke-width", 2)
                 .attr("stroke", "black")
@@ -157,20 +165,12 @@ function init() {
 
             xSpace += 75
         })
-        triangle = chartGroup.append("path")
-        .attr("d", d3.symbol().type(d3.symbolTriangle))
-        .attr("transform", "translate("+menuDict[0][sport]['trianglex']+ ",15) rotate(180)")
-        .attr("class", "triangle")
-        .style("fill", "black")
-        .style("opacity", 0)
+
 
         d3.selectAll(".topSubMenu").transition()
         .duration(500)
         .style("opacity", .5)
 
-        d3.selectAll(".triangle").transition()
-        .duration(500)
-        .style("opacity", 1)
 
         topSubMenu = d3.selectAll(".topSubMenu")
 
@@ -198,6 +198,46 @@ function init() {
             d3.select(this)
             .style("opacity", 1.0)
             buildChart(sport, year, toggle)
+
+
+            var trackerPath = [{'2012': [{"x": 30, "y": 10}, {"x": 30, "y": 20},
+                                            {"x": 30, "y": 20}, {"x": 30, "y": 25}],
+                            '2013': [{"x": 30, "y": 10}, {"x": 30, "y": 20},
+                                            {"x": 105, "y": 20}, {"x": 105, "y": 25}],
+                            '2014': [{"x": 30, "y": 10}, {"x": 30, "y": 20},
+                                            {"x": 180, "y": 20}, {"x": 180, "y": 25}],
+                            '2015': [{"x": 30, "y": 10}, {"x": 30, "y": 20},
+                                            {"x": 255, "y": 20}, {"x": 255, "y": 25}],
+                            '2016': [{"x": 30, "y": 10}, {"x": 30, "y": 20},
+                                            {"x": 330, "y": 20}, {"x": 330, "y": 25}],
+                            '2017': [{"x": 30, "y": 10}, {"x": 30, "y": 20},
+                                            {"x": 405, "y": 20}, {"x": 405, "y": 25}]
+                                            }]
+            console.log(trackerPath)
+            console.log(trackerPath[0]['2012'])
+            console.log(trackerPath[0][String(year)])
+            var trackerFunction = d3.line()
+                                    .x(d=> {return d.x})
+                                    .y(d=> {return d.y});
+
+        if (d3.selectAll(".tracker-line").empty()){
+            var tracker = chartGroup.append("path")
+            .attr("class", "tracker-line")
+            .attr("d", trackerFunction(trackerPath[0][String(year)]))
+            .attr("stroke", "black")
+            .attr("stroke-width", 2)
+            .attr("stroke-dasharray", 1000)
+            .attr("stroke-dashoffset", 1000)
+            .attr("fill", "none")
+
+            }
+        if (!d3.selectAll(".tracker-line").empty()){
+            d3.selectAll(".tracker-line")
+            .transition()
+            .attr("d", trackerFunction(trackerPath[0][String(year)]))
+            .attr("stroke-dasharray", 1000)
+            .attr("stroke-dashoffset", 1000)
+        }
 
             d3.selectAll(".toggle-buttons")
             .transition()
@@ -242,30 +282,10 @@ function init() {
     })
 
 
-
-
 function buildChart(sport, year, toggle){
     var url = ("/api/"+sport)
-    var $container = $('#chart-area')
-        
-    var svgWidth = $container.width();
-    var svgHeight = $container.height();
 
-    console.log(svgWidth);
-    console.log(svgHeight);
-    console.log(Math.min(svgWidth, svgHeight));
-    console.log($('#chart-area').height())
-    //margins
-    var margin = {
-        top: 100,
-        right: 40,
-        bottom: 100,
-        left: 120
-    }; 
-    //chart area
-    var chartWidth = svgWidth - margin.left - margin.right;
-    var chartHeight = svgHeight - margin.top - margin.bottom;
-    var botHeight = chartHeight + 75
+    var barHeight = chartHeight - 100
     
     d3.json(url).then((data) => {
         console.log(data)
@@ -292,7 +312,7 @@ function buildChart(sport, year, toggle){
 
             yScale = d3.scaleLinear()
             .domain([0,1])
-            .rangeRound([chartHeight+75,100])
+            .rangeRound([barHeight,100])
 
             xScale = d3.scaleBand()
             .domain(pctData.map(d => {return d['team']}))
@@ -331,7 +351,7 @@ function buildChart(sport, year, toggle){
             .append("rect")
             .attr("class", "bar")
             .attr("x", d => {return xScale1(d.key)})
-            .attr("y", botHeight)
+            .attr("y", barHeight)
             .attr("width", xScale1.bandwidth())
             .attr("height", 0)
             .attr("fill", d=> {return z(d.key)})
@@ -339,7 +359,7 @@ function buildChart(sport, year, toggle){
             .transition()
             .delay(function (d) {return Math.random()*850;})
             .duration(650)
-            .attr("height", d=> {return botHeight - yScale(d.value)})
+            .attr("height", d=> {return barHeight - yScale(d.value)})
             .attr("y", d=> {return yScale(d.value)})
             .attr("x", d => {return xScale1(d.key)})
             .attr("width", xScale1.bandwidth());
@@ -353,7 +373,7 @@ function buildChart(sport, year, toggle){
 
             chartGroup.append("g")
                 .attr("id", "x-axis")
-                .attr("transform", `translate(0, ${botHeight})`)
+                .attr("transform", `translate(0, ${barHeight})`)
                 .call(botAxis)
                     .selectAll("text")
                     .style("text-anchor", "end")

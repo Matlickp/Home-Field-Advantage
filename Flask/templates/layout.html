@@ -22,53 +22,18 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item" id="vis-list">
                     <a href="" data-toggle="dropdown" class="nav-link dropdown-toggle" id="viz-link">Visualizations</a>
-                    <div class="dropdown-menu dropdown-menu-right" style="background-color: transparent !important; border:0px">
+                    <div class="dropdown-menu dropdown-menu-right" style="background-color: white !important; border:0px">
                         <div class="dropdown-content">
-                            <a href="" class="dropdown-item">NBA</a>
+                            <a href="{{url_for('bar')}}" class="dropdown-item">Home/Away Splits</a>
+                            <a href="{{url_for('bar')}}" class="dropdown-item">Regional Choropleth</a>
                         </div>
                     </div>
                 </li>
             </ul>
         </div>
     </nav>
-<!--     <div class="jumbotron jumbotron-fluid">
-    <div class="container-fluid text-center">
-        <h1 class="display-4 border-bottom">{{title}}</h1>
-        <span class="navbar-toggler-icon" style="color: black"></span>
-    </div>
-</div> -->
-
-        <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel" style="margin-bottom: 50px">
-          <div class="carousel-inner">
-            <div class="carousel-caption d-none d-md-block">
-                <h1 style="font-size: 5em">First slide label</h1>
-                <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-            </div>
-            <div class="carousel-item active">
-                <img src="{{url_for('static', filename='images/bball-court.png')}}" class="d-block w-100" alt="" style="object-fit: cover; height: 500px">
-            </div>
-            <div class="carousel-item">
-              <img src="{{url_for('static', filename='images/soccer-field.png')}}" class="d-block w-100" alt=""style="object-fit: cover; height: 500px">
-            </div>
-            <div class="carousel-item">
-              <img src="{{url_for('static', filename='images/baseball-stadium.png')}}" class="d-block w-100" alt=""style="object-fit: cover; height: 500px">
-            </div>
-          </div>
-        </div>
-
-
-    <div class="main">
-        <div class="container-fluid" style="margin-bottom: 100px">
-            <div class="row">
-                <div class="col-md-10 offset-1">
-                    {%block content%}
-                    {%endblock%}
-                </div>
-            </div>
-        </div>
-    </div>
-
-
+    {%block content%}
+    {%endblock%}
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>

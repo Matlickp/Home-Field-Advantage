@@ -16,6 +16,10 @@ mongo = PyMongo(app)
 def home():
     return render_template('index.html', title="HOME PAGE JUMBO TEXT HERE")
 
+@app.route("/bar")
+def bar():
+    return render_template('bar.html', title = "TITLE TO GO HERE")
+
 
 @app.route("/api/nba", methods=['GET'])
 def api_nba():
