@@ -1,0 +1,13 @@
+.rotate90 {
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.carousel-caption {
+  transform: translateY(-0%);
+  bottom: 0;
+  top: 50%;
+}
