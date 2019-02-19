@@ -29,10 +29,15 @@ def api_nba():
         nba_json.append({'team': record['TEAM'], 'year': record['YEAR'], 'home_win': record['HOME W'], 'home_loss': record['HOME L'],
             'away_win': record['AWAY W'], 'away_loss': record['AWAY L'], 'home_pct': record['HOME %'], 'away_pct': record['AWAY %']})
 
+    playoff_data = mongo.db.nbaplayoffteamdata.find({}, {'_id': False})
+    playoff_json = []
+    for record in playoff_data:
+        playoff_json.append({'team': record['TEAM'], 'year': record['YEAR'], 'home_win': record['HOME W'], 'home_loss': record['HOME L'],
+            'away_win': record['AWAY W'], 'away_loss': record['AWAY L'], 'home_pct': record['HOME %'], 'away_pct': record['AWAY %']})
 
+    total_json = [{'reg': nba_json, 'playoffs': playoff_json}]
     
-    
-    return jsonify((nba_json))
+    return jsonify((total_json))
 
 
 if __name__ == "__main__":
