@@ -1,4 +1,7 @@
 function init() {
+
+    d3.select("#navbar-main")
+    .attr("class", "navbar navbar-expand-md navbar-dark bg-dark")
     
     var $container = $('#chart-area')
         
@@ -74,6 +77,19 @@ function init() {
     .attr("dy", "1em")
     .text("MLB")
 
+    chartGroup.append("text")
+    .attr("class", "initial-text")
+    .attr("y", chartHeight/2)
+    .attr("x", chartWidth/2)
+    .attr("font-family", "Segoe UI Light")
+    .attr("font-size", "5em")
+    .style("cursor", "default")
+    .style("stroke", "black")
+    .style("opacity", .5)
+    .style("text-anchor", "middle")
+    .text("Click on a Sport to Start Exploring")
+
+
     var sport = ""
     var year = ""
     var toggle = 'reg'
@@ -117,16 +133,14 @@ function init() {
         d3.selectAll(".topSubLine")
         .remove()
 
-
+        d3.selectAll(".tracker-line")
+        .remove()
 
         d3.selectAll(".toggle-buttons")
         .transition()
         .duration(650)
         .style("opacity", 0)
-        .remove()
-
-
-        
+        .remove()        
 
         
         sport = d3.select(this).attr("data-value")
@@ -191,6 +205,10 @@ function init() {
         })
 
         topSubMenu.on("click", function() {
+
+            d3.selectAll(".initial-text")
+            .remove()
+
             year = d3.select(this).attr("data-value")
             console.log(year)
             d3.selectAll(".topSubMenu")
@@ -409,7 +427,7 @@ function buildChart(sport, year, toggle){
             var legend = chartGroup.append("g")
               .attr("font-family", "sans-serif")
               .attr("class", "legend")
-              .attr("font-size", 10)
+              .attr("font-size", 12)
               .attr("text-anchor", "end")
                 .selectAll("g")
                 .data(keys.slice().reverse())
