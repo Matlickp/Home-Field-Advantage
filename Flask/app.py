@@ -20,6 +20,9 @@ def home():
 def bar():
     return render_template('bar.html', title = "TITLE TO GO HERE")
 
+@app.route("/travel")
+def travel():
+    return render_template('travel-map.html', title = "TITLE TO GO HERE")
 
 @app.route("/api/nba", methods=['GET'])
 def api_nba():
@@ -42,6 +45,26 @@ def api_nba():
     total_json = [{'reg': nba_json, 'playoffs': playoff_json}]
     
     return jsonify((total_json))
+
+@app.route("/api/nbageo", methods={'GET'})
+def api_nbageo():
+    geo_data = mongo.db.nbacoords.find({}, {'_id': False})
+    matchup_data = mongo.db.nbamatchup.find({}, {'_id': False})
+    geo_json = []
+    matchup_json = []
+
+    for record in geo_data:
+        geo_json.append({'city': record['CITY'], 'state': record['STATE'], 'lat': record['LAT'], 'lng': record['LNG'] })
+
+    nba_teams = teams.get_teams()
+    team_names = [team["full_name"] for team in nba_teams]
+
+    for record in matchup_data:
+        matchup_json.append({'team': record['TEAM_NAME'], 'opponent': record['OPPONENT'], 'location': record['LOCATION'], 'wl': record['WL'], 'tally': record['MATCHUP'] })
+
+    return jsonify({'geo': geo_json, 'teamnames': team_names, 'matchup': matchup_json})
+
+
 
 
 if __name__ == "__main__":

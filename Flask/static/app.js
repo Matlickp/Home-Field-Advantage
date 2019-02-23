@@ -2,11 +2,11 @@ function init() {
 
     d3.select("#navbar-main")
     .attr("class", "navbar navbar-expand-md navbar-dark bg-dark")
-    
+    d3.select("svg").remove()
     var $container = $('#chart-area')
         
     var svgWidth = $container.width();
-    var svgHeight = $container.height();
+    var svgHeight = $container.width() * (1080/1920);
 
     console.log(svgWidth);
     console.log(svgHeight);
@@ -30,8 +30,8 @@ function init() {
         .append("svg")
         .attr("width", '100%')
         .attr("height", '100%')
-        .attr('viewBox','0 0 '+svgWidth +' '+tHeight )
-        .attr('preserveAspectRatio','xMinYMin')
+/*        .attr('viewBox','0 0 '+svgWidth +' '+tHeight )
+        .attr('preserveAspectRatio','xMinYMin')*/
 
 
     var chartGroup = svg.append("g")
@@ -482,6 +482,8 @@ function buildChart(sport, year, toggle){
 
 console.log("hello");
 window.addEventListener('load', init, false)
+window.addEventListener('resize', init, false)
+window.addEventListener('resize', buildChart, false)
 
 
 
