@@ -76,6 +76,7 @@ function init() {
                 var teamMarker = L.marker(geoCoords, {icon: teamIcon});
 
                 teamMarker.bindPopup(teamname);
+                teamMarker["teamname"] = teamname
 
                 teamMarker.on('mouseover', function () {
                     this.openPopup();
@@ -83,6 +84,7 @@ function init() {
 
                 teamMarker.on('mouseout', function () {
                     this.closePopup();
+                    console.log(this)
                 })
 
                 teamMarker.addTo(travelLayers.DEFAULT)
@@ -94,3 +96,5 @@ function init() {
     })
 }
 init()
+
+// create a layer for each team on
