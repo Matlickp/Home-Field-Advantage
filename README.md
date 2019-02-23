@@ -2,7 +2,7 @@
 
 HOME FIELD ADVANTAGE
 
-Purpose
+Purpose</n>
 Home field advantage is often talked about when teams play against rivals 
 or make it to the playoffs. The purpose of this project is to determine 
 how much of an advantage playing at home has. Using data 
