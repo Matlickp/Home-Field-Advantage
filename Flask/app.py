@@ -60,7 +60,7 @@ def api_nbageo():
     team_names = [team["full_name"] for team in nba_teams]
 
     for record in matchup_data:
-        matchup_json.append({'team': record['TEAM_NAME'], 'opponent': record['OPPONENT'], 'location': record['LOCATION'], 'wl': record['WL'], 'tally': record['MATCHUP'] })
+        matchup_json.append({'team': record['team'], 'opponent': record['opponent'], 'away_wins': record['away_wins'], 'away_losses': record['away_losses']})
 
     return jsonify({'geo': geo_json, 'teamnames': team_names, 'matchup': matchup_json})
 
