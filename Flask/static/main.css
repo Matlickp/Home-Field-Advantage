@@ -16,6 +16,16 @@
     animation: dash 5s forwards;
 }
 
+.leaflet-interactive {
+    stroke-dashoffset: 1000;
+    stroke-dasharray: 1200;
+    animation: dash 1s forwards;
+}
+
+
+
+
+
 @keyframes dash{
         from{
             stroke-dashoffset: 1000;
@@ -23,4 +33,4 @@
         to{
             stroke-dashoffset: 0;
         }
-    }
+}
