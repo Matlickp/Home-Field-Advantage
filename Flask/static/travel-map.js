@@ -78,7 +78,21 @@ function init() {
                 })
             }
         }
-    )} 
+    )}
+
+    map.on("overlayadd", function() {
+        console.log("layer change")
+        d3.selectAll(".travel-arc")
+
+                    .style("stroke-opacity", 0)
+                    .remove();
+
+                    d3.selectAll(".travel-circle")
+
+                    .attr("fill-opacity", 0)
+                    .attr("stroke-opacity", 0)
+                    .remove();
+    })
 
     d3.json(geo_url).then((geoData) => {
         console.log(geoData)
