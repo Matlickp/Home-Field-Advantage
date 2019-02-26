@@ -18,13 +18,35 @@
 
 .leaflet-interactive {
     stroke-dashoffset: 1000;
-    stroke-dasharray: 1200;
+    stroke-dasharray: 1400;
     animation: dash 1s forwards;
+}
+
+.travel-circle {
+    animation: iconfadein 1s forwards;
+
+}
+
+.circle-divicon {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      box-shadow: 0px 0px 4px white;
+      transition: all 1s 
 }
 
 
 
 
+@keyframes iconfadein {
+    from {
+        opacity: 0;
+
+    }
+    to {
+        opacity: .7;
+    }
+}
 
 @keyframes dash{
         from{

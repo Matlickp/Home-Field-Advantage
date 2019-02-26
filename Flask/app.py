@@ -59,6 +59,15 @@ def api_nbageo():
     nba_teams = teams.get_teams()
     team_names = [team["full_name"] for team in nba_teams]
 
+    geo_icon_data = mongo.db.nbaiconcoords.find({}, {'_id': False})
+    geo_icon_json = []
+
+    for record in geo_icon_data:
+        geo_icon_json.append({'city': record['CITY'], 'state': record['STATE'], 'lat': record['LAT'], 'lng': record['LNG'] })
+
+    nba_teams = teams.get_teams()
+    team_names = [team["full_name"] for team in nba_teams]
+
     # for name in team_names:
     #     for record in matchup_data:
     #         matchup_json.append(matchup_data[name])
@@ -69,7 +78,7 @@ def api_nbageo():
             team_dict[team] = record[team]
             matchup_json[team] = record[team]
 
-    return jsonify({'geo': geo_json, 'teamnames': team_names, 'matchup': matchup_json})
+    return jsonify({'geo': geo_json, 'geoicons': geo_icon_json, 'teamnames': team_names, 'matchup': matchup_json})
 
 
 
