@@ -53,11 +53,35 @@ function init() {
     geo_url = "/api/nbageo";
     url = "/api/nba";
     function callMouseover(teamdict, hometeamname){ 
+        opacityDict = {}
+        opacityDict1 = {}
         travelLayers.DEFAULT.eachLayer((layer) => {
-            console.log(layer)
+            tempdict = {}
+            // layer.unbindTooltip();
+            // id = getLayerId(layer)
+            name = layer.teamname
+            cl = layer._leaflet_id
+            id = layer.ident
+
+            tempdict["type"] = id
+            tempdict["id"] = cl
+            if (tempdict["type"] == "geoline"){
+                opacityDict[layer.teamname] = tempdict
+            }
+            if (tempdict["type"] == "infocircle"){
+                opacityDict1[layer.teamname] = tempdict
+            }
+            console.log(tempdict)
+            console.log(travelLayers.DEFAULT.getLayer(cl))
+
+            // if (layer.teamname == hometeamname){
+            //     layer.bindTooltip(" ", {opacity: 0})
+            // }
+
+
             if ((layer.teamname) && (layer.teamname != hometeamname)){
-                console.log(teamdict[layer.teamname])
-                console.log(teamdict[layer.teamname]["wins"])
+                mlatlngs = layer.latlng
+                // console.log(teamdict[layer.teamname]["wins"])
                 mOppoTeam = layer.teamname
 
                 mWins = teamdict[layer.teamname]["wins"]
@@ -72,37 +96,64 @@ function init() {
                 layer.on('mouseover', function(e) {
     
                     var popup = e.target.getTooltip()
-                    console.log(popup)
-                    popup.setLatLng(e.latlng).openOn(map)
-    
+                    console.log(layer)
+                    console.log(e.target)
+                    console.log(opacityDict[mOppoTeam])
+                    if (layer.options.icon) {
+                        barg = travelLayers.DEFAULT.getLayer(opacityDict1[layer.teamname]["id"])
+                        barg.setStyle({fillOpacity: 1})
+                        zarg = travelLayers.DEFAULT.getLayer(opacityDict[layer.teamname]["id"])
+                        zarg.setStyle({opacity: 1})
+                        console.log(barg)
+                        console.log(zarg)
+                        console.log("zz")
+                    }
+                    popup.setLatLng(mlatlngs).openOn(map)
+                })
+                layer.on('mouseout', function(e) {
+                    if (layer.options.icon) {
+                        barg = travelLayers.DEFAULT.getLayer(opacityDict1[layer.teamname]["id"])
+                        barg.setStyle({fillOpacity: .7})
+                        zarg = travelLayers.DEFAULT.getLayer(opacityDict[layer.teamname]["id"])
+                        zarg.setStyle({opacity: .7})
+                        console.log(barg)
+                        console.log(zarg)
+                        console.log("zz")
+                    }
                 })
             }
-        }
-    )}
+        })
+        console.log(opacityDict)
+        console.log(opacityDict1)
+    }
 
     map.on("overlayadd", function() {
         console.log("layer change")
         d3.selectAll(".travel-arc")
 
-                    .style("stroke-opacity", 0)
-                    .remove();
+            .style("stroke-opacity", 0)
+            .remove();
 
-                    d3.selectAll(".travel-circle")
+        d3.selectAll(".travel-circle")
 
-                    .attr("fill-opacity", 0)
-                    .attr("stroke-opacity", 0)
-                    .remove();
+            .attr("fill-opacity", 0)
+            .attr("stroke-opacity", 0)
+            .remove();
+        d3.selectAll(".team-icon")
+            .remove()
+        buildGraph();
+
     })
-
-    d3.json(geo_url).then((geoData) => {
-        console.log(geoData)
-        d3.json(url).then((data) => {
-
+    function buildGraph(){
+        d3.json(geo_url).then((geoData) => {
+    
+            console.log(geoData)
+    
             var cityMarkers = [];
             var coordDict = {};
             var matchupDict  = {};
             for (var i = 0; i < geoData['geo'].length; i++) {
-
+    
                 var teamname = geoData['teamnames'][i];
                 var allteams = geoData['teamnames']
                 console.log(teamname);
@@ -112,27 +163,30 @@ function init() {
                 var geoCoords = [geoLat, geoLng];
                 console.log(geoCoords);
                 coordDict[teamname] = geoCoords
-
+    
                 var baseIcon = L.Icon.extend({
                     options: {
                         iconSize: [50,50]
+                        
                     }
                 })      
-
-                var teamIcon = new baseIcon({iconUrl: "/static/images/nbalogos/" + teamname + ".png"})
-
+    
+                var teamIcon = new baseIcon({iconUrl: "/static/images/nbalogos/" + teamname + ".png", className: "team-icon"})
+                teamIcon["teamname"] = teamname;
+                teamIcon["ident"] = "imgicon"
+    
                 var teamMarker = L.marker(geoCoords, {icon: teamIcon});
-
+    
                 var cityLat = +geoData['geo'][i].lat;
                 var cityLng = geoData['geo'][i].lng;
                 var cityCoords = [cityLat, cityLng]
                 console.log(cityCoords)
                 var lineCoords = [geoCoords, cityCoords]
                 console.log(lineCoords)
-
+    
                 var lineStart = new L.LatLng(geoLat, geoLng)
                 var lineEnd = new L.LatLng(cityLat, cityLng)
-
+    
                 var Geodesic = L.geodesic([[lineStart, lineEnd]], {
                             weight: 2,
                             opacity: 1,
@@ -140,31 +194,30 @@ function init() {
                             steps: 50
                         }).addTo(travelLayers.DEFAULT)
 
-                // teamMarker.bindPopup(teamname);
+                var endCircle = L.circle(lineEnd, 7500, {
+                    color: "black",
+                    className: "end-line",
+                    fillColor: "black",
+                    fillOpacity: 1
+                }).addTo(travelLayers.DEFAULT)
+    
                 teamMarker["teamname"] = teamname
-
-                // teamMarker.on('mouseover', function () {
-                //     this.openPopup();
-                // })
-
-                // teamMarker.on('mouseout', function () {
-                //     this.closePopup();
-                // })
-
+    
+    
                 teamMarker.on('click', function() {
                     d3.selectAll(".travel-arc")
                     .transition()
                     .duration(500)
                     .style("stroke-opacity", 0)
                     .remove();
-
+    
                     d3.selectAll(".travel-circle")
                     .transition()
                     .duration(500)
                     .attr("fill-opacity", 0)
                     .attr("stroke-opacity", 0)
                     .remove();
-
+    
                     var latlngs = []
                     var hometeam = this.teamname;
                     console.log(hometeam);
@@ -174,7 +227,7 @@ function init() {
                     console.log(geoData['matchup'][hometeam])
                     var teamdict = geoData['matchup'][hometeam]
                     allteams.forEach((instance) => {
-
+    
                         if (hometeam != instance){
                             oppocoords = coordDict[instance]
                             var test1 = new L.LatLng(homecoords[0], homecoords[1])
@@ -200,59 +253,48 @@ function init() {
                                 fillColor: z(pct),
                                 fillOpacity: .7
                             })
-
-
-                            // var circleIcon = L.divIcon({
-                            //     iconSize: [100,100],
-                            //     className: "circle-divicon" 
-                            // })
-
-                            // var indivIcon = L.marker(test2, {
-                            //     icon: circleIcon
-                            // })
-
-
+    
+    
                             Geodesic['teamname'] = instance
+                            Geodesic['ident'] = "geoline"
                             infoCircle['teamname'] = instance
-                            // indivIcon['teamname'] = instance
-
-                            // infoCircle.bindTooltip(vsString + wlString + "Win Percentage: " + pctstring + "%")
-                            // Geodesic.bindTooltip(vsString + wlString + "Win Percentage: " + pctstring + "%")
+                            infoCircle['ident'] = "infocircle"
+    
                             Geodesic.on('mouseover', function() {
-                                // console.log('boobs')
-                                // this.openTooltip()
+    
                                 this.setStyle({opacity: 1})                                                              
                             })
-
+    
                             Geodesic.on('mouseout', function() {
-                                // console.log('boobs')
-                                // this.openTooltip()
+    
                                 this.setStyle({opacity: .5})                            
+                            })
+                            infoCircle.on('mouseover', function() {
+    
+                                this.setStyle({fillOpacity: 1})                                                              
+                            })
+    
+                            infoCircle.on('mouseout', function() {
+    
+                                this.setStyle({fillOpacity: .5})                            
                             })
                             
                         Geodesic.addTo(travelLayers.DEFAULT)
                         infoCircle.addTo(travelLayers.DEFAULT)
-                        // indivIcon.on('add', function() {
-                        //     var myIcon = document.querySelector('.circle-divicon')
-                        //     setTimeout(function(){
-                        //     myIcon.style.width = '5000px'
-                        //     myIcon.style.height = '5000px'
-                        //     myIcon.style.borderRadius = '50%'
-                        //     myIcon.style.marginLeft = '-25px'
-                        //     myIcon.style.marginTop = '-25px'
-                        //     myIcon.style.backgroundColor = "blue"
-                            
-                        //   }, 1000)
-                        // })
-                        // indivIcon.addTo(travelLayers.DEFAULT)                            
+                           
                         }
                     })
                 callMouseover(teamdict, hometeam)
                 })
-                teamMarker.addTo(travelLayers.DEFAULT)
+    
+            teamMarker.addTo(travelLayers.DEFAULT)
+    
+    
+    
             }
         })
-    })
+    }
+    buildGraph()
 }
 
 
