@@ -103,7 +103,7 @@ function init(){
     var menuDict = [{'nba': {'years': [2012,2013,2014,2015,2016,2017],
                                 'offset': 140,
                                 'trianglex': 30},
-                    'nfl': {'years': [2012,2013,2014,2015,2016,2017],
+                    'nfl': {'years': [2012,2013,2014,2015,2016],
                                 'offset': 240,
                                 'trianglex': 130},
                     'mlb': {'years': [2012,2013,2014,2015,2016,2017],
@@ -156,6 +156,7 @@ function init(){
         console.log(x)
         ySpace = 25
         xSpace = 0
+        i=1
         years.forEach(year => {
             chartGroup.append("text")
             .attr("y", ySpace)
@@ -169,7 +170,8 @@ function init(){
             .style("opacity", 0)
             .attr("dy", "1em")
             .text(year);
-            if (year != 2017) {
+        console.log(years.length)
+        if (i < years.length){
             chartGroup.append("line")
                 .attr("class", "topSubLine")
                 .attr("x1", xSpace + 67 )
@@ -181,7 +183,8 @@ function init(){
                 .transition()
                 .duration(650)
                 .attr("y2", ySpace + 20)
-            }
+        }
+            i += 1
             xSpace += 75
         })
 
@@ -290,40 +293,41 @@ function init(){
             .duration(650)
             .style("opacity", 0)
             .remove()
+            if (sport != 'nfl'){
+                var dataToggle = chartGroup.append("text")
+                .attr("y", 65)
+                .attr("x", 10)
+                .attr("class", "toggle-buttons")
+                .attr("font-family", "Segoe UI Light")
+                .attr("font-size", "1em")
+                .attr("data-value", 'reg')
+                .style("cursor", "default")
+                .style("stroke", "black")
+                .style("opacity", 0)
+                .attr("dy", "1em")
+                .text("Regular Season")
+                .transition()
+                .delay(650)
+                .duration(650)
+                .style("opacity", 1)
 
-            var dataToggle = chartGroup.append("text")
-            .attr("y", 65)
-            .attr("x", 10)
-            .attr("class", "toggle-buttons")
-            .attr("font-family", "Segoe UI Light")
-            .attr("font-size", "1em")
-            .attr("data-value", 'reg')
-            .style("cursor", "default")
-            .style("stroke", "black")
-            .style("opacity", 0)
-            .attr("dy", "1em")
-            .text("Regular Season")
-            .transition()
-            .delay(650)
-            .duration(650)
-            .style("opacity", 1)
-
-            var dataToggle = chartGroup.append("text")
-            .attr("y", 65)
-            .attr("x", 125)
-            .attr("class", "toggle-buttons")
-            .attr("font-family", "Segoe UI Light")
-            .attr("font-size", "1em")
-            .attr("data-value", 'playoffs')
-            .style("cursor", "default")
-            .style("stroke", "black")
-            .style("opacity", 0)
-            .attr("dy", "1em")
-            .text("Playoffs")
-            .transition()
-            .delay(650)
-            .duration(650)
-            .style("opacity", .5)
+                var dataToggle = chartGroup.append("text")
+                .attr("y", 65)
+                .attr("x", 125)
+                .attr("class", "toggle-buttons")
+                .attr("font-family", "Segoe UI Light")
+                .attr("font-size", "1em")
+                .attr("data-value", 'playoffs')
+                .style("cursor", "default")
+                .style("stroke", "black")
+                .style("opacity", 0)
+                .attr("dy", "1em")
+                .text("Playoffs")
+                .transition()
+                .delay(650)
+                .duration(650)
+                .style("opacity", .5)
+            }
         })  
     })
 
@@ -354,7 +358,7 @@ function buildChart(sport, year, toggle) {
         console.log(test)
         
         yScale = d3.scaleLinear()
-        .domain([0,1])
+        .domain([0,100])
         .rangeRound([barHeight,100])
 
         xScale = d3.scaleBand()
