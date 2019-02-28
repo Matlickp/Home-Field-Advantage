@@ -56,6 +56,17 @@ def api_nfl():
     nfls = [{'reg': nfl_json}]
     return jsonify((nfls))
 
+@app.route("/api/mlb", methods=['GET'])
+def api_mlb():
+    mlb_data = mongo.db.mlbteamdata.find({}, {'_id': False})
+    mlb_json = []
+    for record in mlb_data:
+        mlb_json.append({'team': record['TEAM'], 'year': record['YEAR'], 'home_win': record['HOME W'], 'home_loss': record['HOME L'],
+            'away_win': record['AWAY W'], 'away_loss': record['AWAY L'], 'home_pct': record['HOME %'], 'away_pct': record['AWAY %']})
+    mlbs = [{'reg': mlb_json}]
+    return jsonify((mlbs))
+
+
 @app.route("/api/nbageo", methods={'GET'})
 def api_nbageo():
     geo_data = mongo.db.nbacoords.find({}, {'_id': False})

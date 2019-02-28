@@ -20,8 +20,7 @@ function init() {
       center: [41.205333, -101.065578],
       zoom: 4.5,
       layers: [
-        travelLayers.DEFAULT,
-        travelLayers.NFL
+        travelLayers.DEFAULT
       ]
     });
     
@@ -40,7 +39,7 @@ function init() {
         "NFL": travelLayers.NFL
     };
 
-    L.control.layers(null, overlays).addTo(map);
+    L.control.layers(overlays, null).addTo(map);
 
     var info = L.control({
         position: "topright"
@@ -219,6 +218,10 @@ function init() {
                     .attr("stroke-opacity", 0)
                     .remove();
 
+                    travelLayers["NFL"].eachLayer((layer) => {
+                        layer.unbindTooltip()
+                    })
+
                     console.log(e)
 
                     var latlngs = []
@@ -368,6 +371,10 @@ function init() {
                     .attr("fill-opacity", 0)
                     .attr("stroke-opacity", 0)
                     .remove();
+
+                    travelLayers["DEFAULT"].eachLayer((layer) => {
+                        layer.unbindTooltip()
+                    })
 
                     console.log(nflcoordDict)
                     var nfllatlngs = []
