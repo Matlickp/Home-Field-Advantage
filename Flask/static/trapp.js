@@ -293,7 +293,7 @@ function init(){
             .duration(650)
             .style("opacity", 0)
             .remove()
-            if (sport != 'nfl'){
+            if (sport == 'nba' ){
                 var dataToggle = chartGroup.append("text")
                 .attr("y", 65)
                 .attr("x", 10)
@@ -346,15 +346,17 @@ function buildChart(sport, year, toggle) {
         })
 
         var pctData = _.map(yearData, function(o) {
-            return _.pick(o, 'team', 'home_pct', 'away_pct')
+            return _.pick(o, 'team', 'home_pct', 'away_pct', 'away_win', 'away_loss', 'home_win', 'home_loss')
         })
 
         var keys = ['home_pct', 'away_pct']
+        var keys2 = ['home', 'away']
         console.log(keys)
+        console.log(data)
         console.log(yearData)
         console.log(pctData)
 
-        var test = pctData.map(d=> { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
+        var test = pctData.map(d=> { return keys2.map(function(key) { return {key: key + "_pct", value: d[key + "_pct"], w: d[key + "_win"], l: d[key + "_loss"]}; }); })
         console.log(test)
         
         yScale = d3.scaleLinear()
@@ -388,7 +390,7 @@ function buildChart(sport, year, toggle) {
         .remove()
 
         var bars = g.selectAll("rect")
-        .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); });
+        .data(function(d) { return keys2.map(function(key) { return {key: key + "_pct", value: d[key + "_pct"], w: d[key + "_win"], l: d[key + "_loss"], team: d["team"]}; }); });
 
         bars
             .enter()
@@ -399,6 +401,7 @@ function buildChart(sport, year, toggle) {
             .attr("width", xScale1.bandwidth())
             .attr("height", 0)
             .attr("fill", d=> {return z(d.key)})
+            .style("opacity", .8)
             .merge(bars)
             .transition()
             .delay(function (d) {return Math.random()*850;})
@@ -407,6 +410,42 @@ function buildChart(sport, year, toggle) {
             .attr("y", d=> {return yScale(d.value)})
             .attr("x", d => {return xScale1(d.key)})
             .attr("width", xScale1.bandwidth())
+
+        var toolTip = d3.tip()
+            .attr("class", "tooltip")
+            .html(function(d) {
+                console.log(d)
+                return (d.team + "<br>" + "Win: " + d.w + "  Loss: " + d.l + "<br>" + "Win %:     " + d.value)
+            })
+        chartGroup.call(toolTip)
+
+        d3.selectAll("rect").on("mouseover", function(d) {
+            console.log("mouseover")
+            toolTip
+                .offset([-10,0])
+                .show(d, this)
+
+            d3.select(this).style("opacity", 1)
+
+            lineheight = d3.select(this).node()
+            console.log(lineheight.height)
+            console.log(lineheight.height.baseVal.value)
+
+            svg.append("line")
+                .attr("class", "measuring-line")
+                .style("stroke", "black")
+                .style("stroke-width", 1)
+                .attr("x1", 0)
+                .attr("x2", chartWidth)
+                .attr("y1", chartHeight - lineheight.height.baseVal.value - 60)
+                .attr("y2", chartHeight - lineheight.height.baseVal.value - 60)
+        })
+        .on("mouseout", function(d) {
+            toolTip.hide(d)
+            d3.select(this).style("opacity", .8)
+            d3.selectAll(".measuring-line")
+            .remove()
+        })
 
         function updateBars() {
             chartWidth = $('#chart-area').width() -80
@@ -444,6 +483,7 @@ function buildChart(sport, year, toggle) {
             .attr("width", xScale1.bandwidth())
             .attr("height", d=> {return barHeight - yScale(d.value)})
             .attr("fill", d=> {return z(d.key)})
+            .style("opacity", .8)
             .merge(bars)
             .transition()
             .delay(250)

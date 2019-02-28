@@ -12,15 +12,17 @@ function init() {
     });
 
     var travelLayers = {
-        DEFAULT: new L.LayerGroup(),
-        NFL: new L.LayerGroup()
+        nba: new L.LayerGroup(),
+        nfl: new L.LayerGroup(),
+        mlb: new L.LayerGroup()
     };
 
     var map = L.map("travel-chart-area", {
       center: [41.205333, -101.065578],
       zoom: 4.5,
       layers: [
-        travelLayers.DEFAULT
+
+        travelLayers.nba
       ]
     });
     
@@ -35,8 +37,9 @@ function init() {
     lightMap.addTo(map);
 
     var overlays = {
-        "NBA": travelLayers.DEFAULT,
-        "NFL": travelLayers.NFL
+        "NBA": travelLayers.nba,
+        "NFL": travelLayers.nfl,
+        "MLB": travelLayers.mlb
     };
 
     L.control.layers(overlays, null).addTo(map);
@@ -126,8 +129,9 @@ function init() {
         console.log(opacityDict1)
     }
 
-    map.on("overlayadd", function() {
+    map.on("baselayerchange", function(e) {
         console.log(this)
+        console.log(e)
         console.log("layer change")
         d3.selectAll(".travel-arc")
 
@@ -141,10 +145,14 @@ function init() {
             .remove();
         d3.selectAll(".team-icon")
             .remove()
+
+        sportname = e.name
+        console.log(sportname)
         buildGraph();
 
     })
     function buildGraph(){
+        sportnames = ['nba', 'nfl', 'mlb']
         d3.json(geo_url).then((geoData) => {
     
             console.log(geoData)
@@ -153,14 +161,15 @@ function init() {
             var coordDict = {};
             var matchupDict  = {};
             // NBA
-            for (var i = 0; i < geoData['geo']['nba'].length; i++) {
+            sportnames.forEach((sport) => {
+            for (var i = 0; i < geoData['geo'][sport].length; i++) {
                  
-                var teamname = geoData['teamnames']['nba'][i];
-                var allteams = geoData['teamnames']['nba']
+                var teamname = geoData['teamnames'][sport][i];
+                var allteams = geoData['teamnames'][sport]
+                console.log(teamname)
 
-
-                var geoLat = +geoData['geoicons']['nba'][i].lat;
-                var geoLng = geoData['geoicons']['nba'][i].lng;
+                var geoLat = +geoData['geoicons'][sport][i].lat;
+                var geoLng = geoData['geoicons'][sport][i].lng;
                 var geoCoords = [geoLat, geoLng];
                 coordDict[teamname] = geoCoords
     
@@ -171,14 +180,14 @@ function init() {
                     }
                 })      
     
-                var teamIcon = new baseIcon({iconUrl: "/static/images/nbalogos/" + teamname + ".png", className: "team-icon"})
+                var teamIcon = new baseIcon({iconUrl: "/static/images/"+ sport + "logos/" + teamname + ".png", className: "team-icon"})
                 teamIcon["teamname"] = teamname;
                 teamIcon["ident"] = "imgicon"
     
                 var teamMarker = L.marker(geoCoords, {icon: teamIcon});
     
-                var cityLat = +geoData['geo']['nba'][i].lat;
-                var cityLng = geoData['geo']['nba'][i].lng;
+                var cityLat = +geoData['geo'][sport][i].lat;
+                var cityLng = geoData['geo'][sport][i].lng;
                 var cityCoords = [cityLat, cityLng]
 
                 var lineCoords = [geoCoords, cityCoords]
@@ -192,14 +201,14 @@ function init() {
                             opacity: 1,
                             color: "black",
                             steps: 50
-                        }).addTo(travelLayers.DEFAULT)
+                        }).addTo(travelLayers[sport])
 
                 var endCircle = L.circle(lineEnd, 7500, {
                     color: "black",
                     className: "end-line",
                     fillColor: "black",
                     fillOpacity: 1
-                }).addTo(travelLayers.DEFAULT)
+                }).addTo(travelLayers[sport])
     
                 teamMarker["teamname"] = teamname
     
@@ -218,9 +227,11 @@ function init() {
                     .attr("stroke-opacity", 0)
                     .remove();
 
-                    travelLayers["NFL"].eachLayer((layer) => {
-                        layer.unbindTooltip()
-                    })
+                    // if (sport != sportname){
+                    //     travelLayers[sport].eachLayer((layer) => {
+                    //         layer.unbindTooltip()
+                    //     })
+                    // }
 
                     console.log(e)
 
@@ -231,199 +242,43 @@ function init() {
                     console.log(hometeam);
                     var homecoords = coordDict[this.teamname];
                     var testcoords = coordDict['Atlanta Hawks']
-                    console.log(geoData['matchup']['nba'])
-                    console.log(geoData['matchup']['nba'][hometeam])
-                    var teamdict = geoData['matchup']['nba'][hometeam]
+                    console.log(geoData['matchup'][sport])
+                    console.log(geoData['matchup'][sport][hometeam])
+                    var teamdict = geoData['matchup'][sport][hometeam]
                     allteams.forEach((instance) => {
     
                         if (hometeam != instance){
-                            oppocoords = coordDict[instance]
-                            var test1 = new L.LatLng(homecoords[0], homecoords[1])
-                            var test2 = new L.LatLng(oppocoords[0], oppocoords[1])
-    
-                            var awaywins = teamdict[instance]['wins']
-                            var awaylosses = teamdict[instance]['losses']
-                            var pct = (awaywins / (awaywins + awaylosses)) * 100
-                            var pctrounded = Math.round(pct * 100)/100
-                            var pctstring = Number.parseFloat(pct).toPrecision(4)
-                            var vsString = hometeam + " @ " + instance + ":<br>"
-                            var wlString = "Win: " + awaywins + "  Loss: " + awaylosses + "<br>"
-                            var Geodesic = L.geodesic([[test1, test2]], {
-                                weight: 4,
-                                opacity: 0.7,
-                                color: z(pct),
-                                steps: 50,
-                                className: "travel-arc"
-                            })
-                            var infoCircle = L.circle(test2, 150000, {
-                                color: z(pct),
-                                className: "travel-circle",
-                                fillColor: z(pct),
-                                fillOpacity: .7
-                            })
-    
-    
-                            Geodesic['teamname'] = instance
-                            Geodesic['ident'] = "geoline"
-                            infoCircle['teamname'] = instance
-                            infoCircle['ident'] = "infocircle"
-    
-                            Geodesic.on('mouseover', function() {
-    
-                                this.setStyle({opacity: 1})                                                              
-                            })
-    
-                            Geodesic.on('mouseout', function() {
-    
-                                this.setStyle({opacity: .5})                            
-                            })
-                            infoCircle.on('mouseover', function() {
-    
-                                this.setStyle({fillOpacity: 1})                                                              
-                            })
-    
-                            infoCircle.on('mouseout', function() {
-    
-                                this.setStyle({fillOpacity: .5})                            
-                            })
-                            
-                        Geodesic.addTo(travelLayers.DEFAULT)
-                        infoCircle.addTo(travelLayers.DEFAULT)
-                           
-                        }
-                    })
-                callMouseover(teamdict, hometeam, "DEFAULT")
-                })
-    
-            teamMarker.addTo(travelLayers.DEFAULT)
-    
-    
-    
-            }
-            var nflcityMarkers = [];
-            var nflcoordDict = {};
-            var nflmatchupDict  = {};
-            // NFL
-            for (var i = 0; i < geoData['geo']['nfl'].length; i++) {
-                 
-                var nflteamname = geoData['geoicons']['nfl'][i]['team'];
-                var nflallteams = geoData['teamnames']['nfl']
-
-
-                var nflgeoLat = +geoData['geoicons']['nfl'][i].lat;
-                var nflgeoLng = geoData['geoicons']['nfl'][i].lng;
-                var nflgeoCoords = [nflgeoLat, nflgeoLng];
-                nflcoordDict[nflteamname] = nflgeoCoords
-                
-                var nflbaseIcon = L.Icon.extend({
-                    options: {
-                        iconSize: [50,50]
-                        
-                    }
-                })
-                console.log(nflteamname)
-                console.log(nflgeoCoords)      
-    
-                var nflteamIcon = new baseIcon({iconUrl: "/static/images/nfllogos/" + nflteamname + ".png", className: "nfl-team-icon"})
-                nflteamIcon["teamname"] = nflteamname;
-                nflteamIcon["ident"] = "imgicon"
-                console.log(nflteamIcon)
-    
-                var nflteamMarker = L.marker(nflgeoCoords, {icon: nflteamIcon});
-    
-                var nflcityLat = +geoData['geo']['nfl'][i].lat;
-                var nflcityLng = geoData['geo']['nfl'][i].lng;
-                var nflcityCoords = [nflcityLat, nflcityLng]
-
-                var nfllineCoords = [nflgeoCoords, nflcityCoords]
-
-    
-                var nfllineStart = new L.LatLng(nflgeoLat, nflgeoLng)
-                var nfllineEnd = new L.LatLng(nflcityLat, nflcityLng)
-    
-                var Geodesic = L.geodesic([[nfllineStart, nfllineEnd]], {
-                            weight: 2,
-                            opacity: 1,
-                            color: "black",
-                            steps: 50
-                        }).addTo(travelLayers.NFL)
-
-                var nflendCircle = L.circle(nfllineEnd, 7500, {
-                    color: "black",
-                    className: "end-line",
-                    fillColor: "black",
-                    fillOpacity: 1
-                }).addTo(travelLayers.NFL)
-    
-                nflteamMarker["teamname"] = nflteamname
-    
-    
-                nflteamMarker.on('click', function(e) {
-                    d3.selectAll(".travel-arc")
-                    .transition()
-                    .duration(500)
-                    .style("stroke-opacity", 0)
-                    .remove();
-    
-                    d3.selectAll(".travel-circle")
-                    .transition()
-                    .duration(500)
-                    .attr("fill-opacity", 0)
-                    .attr("stroke-opacity", 0)
-                    .remove();
-
-                    travelLayers["DEFAULT"].eachLayer((layer) => {
-                        layer.unbindTooltip()
-                    })
-
-                    console.log(nflcoordDict)
-                    var nfllatlngs = []
-                    var nflhometeam = this.teamname;
-                    e.target.bindTooltip(nflhometeam + ": Data for 2012-2017 Seasons")
-
-                    console.log(nflhometeam);
-                    var nflhomecoords = nflcoordDict[this.teamname];
-                    console.log(nflhomecoords)
-                    var nfltestcoords = nflcoordDict['Atlanta Hawks']
-                    console.log(geoData['matchup']['nfl'])
-                    console.log(geoData['matchup']['nfl'][nflhometeam])
-                    var nflteamdict = geoData['matchup']['nfl'][nflhometeam]
-                    console.log(nflteamdict)
-                    nflallteams.forEach((instance) => {
-    
-                        if (nflhometeam != instance){
                             try {
-                                nfloppocoords = nflcoordDict[instance]
-                                var nfltest1 = new L.LatLng(nflhomecoords[0], nflhomecoords[1])
-                                var nfltest2 = new L.LatLng(nfloppocoords[0], nfloppocoords[1])
+                                var oppocoords = coordDict[instance]
+                                var test1 = new L.LatLng(homecoords[0], homecoords[1])
+                                var test2 = new L.LatLng(oppocoords[0], oppocoords[1])
                                 console.log(instance)
-                                console.log(nflteamdict[instance])
-                                var nflawaywins = nflteamdict[instance]['wins']
-                                var nflawaylosses = nflteamdict[instance]['losses']
-                                var nflpct = (nflawaywins / (nflawaywins + nflawaylosses)) * 100
-                                var nflpctrounded = Math.round(nflpct * 100)/100
-                                var nflpctstring = Number.parseFloat(nflpct).toPrecision(4)
-                                var nflvsString = nflhometeam + " @ " + instance + ":<br>"
-                                var nflwlString = "Win: " + nflawaywins + "  Loss: " + nflawaylosses + "<br>"
-                                var Geodesic = L.geodesic([[nfltest1, nfltest2]], {
+                                var awaywins = teamdict[instance]['wins']
+                                var awaylosses = teamdict[instance]['losses']
+                                var pct = (awaywins / (awaywins + awaylosses)) * 100
+                                var pctrounded = Math.round(pct * 100)/100
+                                var pctstring = Number.parseFloat(pct).toPrecision(4)
+                                var vsString = hometeam + " @ " + instance + ":<br>"
+                                var wlString = "Win: " + awaywins + "  Loss: " + awaylosses + "<br>"
+                                var Geodesic = L.geodesic([[test1, test2]], {
                                     weight: 4,
                                     opacity: 0.7,
-                                    color: z(nflpct),
+                                    color: z(pct),
                                     steps: 50,
                                     className: "travel-arc"
                                 })
-                                var nflinfoCircle = L.circle(nfltest2, 150000, {
-                                    color: z(nflpct),
+                                var infoCircle = L.circle(test2, 150000, {
+                                    color: z(pct),
                                     className: "travel-circle",
-                                    fillColor: z(nflpct),
+                                    fillColor: z(pct),
                                     fillOpacity: .7
                                 })
         
         
                                 Geodesic['teamname'] = instance
                                 Geodesic['ident'] = "geoline"
-                                nflinfoCircle['teamname'] = instance
-                                nflinfoCircle['ident'] = "infocircle"
+                                infoCircle['teamname'] = instance
+                                infoCircle['ident'] = "infocircle"
         
                                 Geodesic.on('mouseover', function() {
         
@@ -434,28 +289,30 @@ function init() {
         
                                     this.setStyle({opacity: .5})                            
                                 })
-                                nflinfoCircle.on('mouseover', function() {
+                                infoCircle.on('mouseover', function() {
         
                                     this.setStyle({fillOpacity: 1})                                                              
                                 })
         
-                                nflinfoCircle.on('mouseout', function() {
+                                infoCircle.on('mouseout', function() {
         
                                     this.setStyle({fillOpacity: .5})                            
                                 })
                                 
-                            Geodesic.addTo(travelLayers.NFL)
-                            nflinfoCircle.addTo(travelLayers.NFL)
-                               
-                            }catch(error) {console.log("no data")}
+                            Geodesic.addTo(travelLayers[sport])
+                            infoCircle.addTo(travelLayers[sport])
+                            }catch(error) {console.log(error)}
                         }
                     })
-                callMouseover(nflteamdict, nflhometeam, "NFL")
+                callMouseover(teamdict, hometeam, sport)
                 })
     
-            nflteamMarker.addTo(travelLayers.NFL)
+            teamMarker.addTo(travelLayers[sport])
+    
+    
     
             }
+            })
         })
     }
     buildGraph()
