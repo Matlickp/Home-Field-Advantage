@@ -7,7 +7,6 @@ d3.selectAll(".tabledata").on("click", d => {
     dataPage = d3.select("#data-area")
     url = "/api/" + choice
     console.log(url)
-    function buildTable() {
         d3.json("/api/" + choice).then(data => {
             var dataAccordion = dataPage.append("div").attr("id", "accordion")
             data.forEach(record => {
@@ -28,7 +27,7 @@ d3.selectAll(".tabledata").on("click", d => {
                         dataButton.attr("class", "btn btn-link collapsed d-inline-flex");
                         dataButton.attr("id", record1 + "button");
                         dataButton.attr("data-toggle", "collapse");
-                        dataButton.attr("data-target", "#" + record1);
+                        dataButton.attr("data-target", "#" + record1 + "main");
 
                         dataButton.text(function() {
                             if (record1 == "reg") {
@@ -55,7 +54,7 @@ d3.selectAll(".tabledata").on("click", d => {
                                         .text("Team")
                     var searchDate = dataCriteria.append("option")
                                         .attr("value", "date")
-                                        .text("Date")
+                                        .text("Season")
 
                     var dataSearch = dataForm.append("input")
                         .attr("class", "form-control mr-sm-2 float-right")
@@ -74,22 +73,25 @@ d3.selectAll(".tabledata").on("click", d => {
 
                     var dataButton2 = dataForm.append("button")
                         .attr("class", "btn btn-outline-danger my-2 my-sm-0 align-middle")
-                        .attr("id", "clear-btn" + record1)
+                        .attr("id", "clear-btn")
                         .attr("type", "submit")
+                        .attr("href", "#")
                         .attr("value", record1)
                         .text("Clear")
                         // .style("margin-top", "50px !important")
 
                     var dataMain = dataCard.append("div");
-                        dataMain.attr("id", record1);
+                        dataMain.attr("id", record1 + "main");
                         dataMain.attr("class", "collapse");
                         dataMain.attr("data-parent", "#accordion");
 
                         dataBody = dataMain.append("div");
-                        dataBody.attr("class", "card-body");
+                        dataBody.attr("class", "card-body")
+                                .attr("id", record1 + "databody");
 
                         var dataTable = dataBody.append("table");
-                        dataTable.attr("class", "table table-striped");
+                        dataTable.attr("class", "table table-striped")
+                                    .attr("id", record1 + "table");
                         var dataHead = dataTable.append("thead");
                         var dataRow = dataHead.append("tr");
 
@@ -112,7 +114,6 @@ d3.selectAll(".tabledata").on("click", d => {
                                     tableCell.text(value);
                                 }else{
                                 tableCell = dataRow.append("td");
-                                tableCell.style("text-align", "center");
                                 tableCell.text(value);
                                 }
                             });
@@ -176,14 +177,43 @@ d3.selectAll(".tabledata").on("click", d => {
 
 
                     })
-                    var clearBtn = d3.select("#clear-btn")
-                    clearBtn.on("click", updateTable)
+                    clearb = d3.selectAll("#clear-btn").on("click", function() {
+                        d3.event.preventDefault()
+                        loc = this.value
+                        head = d3.select("#" + loc + "header")
+                        console.log(loc)
+
+                        d3.json("/api/" + choice).then(data => {
+                            console.log(data[0][loc])
+                            tableD = data[0][loc]
+
+                            r = d3.select("#" + loc + "body").selectAll("tr")
+                            d = d3.select("#" + loc + "body").selectAll("td")
+
+                            r.remove();
+                            d.remove()
+                            
+                            tableD.forEach((eb) => {
+                                var row = d3.select("#" + loc + "body").append("tr")
+                                Object.entries(eb).forEach(([key, value]) => {
+                                    var cell = d3.select("#" + loc + "body").append("td")
+                                    cell.text(value)
+                                })
+                            })
+                        })
+
+                    })
 
             })
 
 
         })
-    }
-    buildTable()
+
+
 
 })
+
+
+
+
+

@@ -27,6 +27,14 @@
 
 }
 
+.icon-line {
+  animation: iconfade 2s forwards;
+}
+
+.icon-marker {
+  animation: iconfade 2s forwards;
+} 
+
 .circle-divicon {
       width: 10px;
       height: 10px;
@@ -74,6 +82,16 @@
     }
     to {
         opacity: .7;
+    }
+}
+
+@keyframes iconfade {
+    from {
+        opacity: 0;
+
+    }
+    to {
+        opacity: 1;
     }
 }
 

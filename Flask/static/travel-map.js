@@ -1,8 +1,10 @@
 function init() {
     console.log('howdy')
     var z = d3.scaleLinear()
-            .domain([0, 50, 100])
-            .range(["#a05d56","#476840"]);
+        .range(["#990000", "#004d00"]);
+
+    var y = d3.scaleLinear()
+        .range(["#990000", "#004d00"]);
 
     var lightMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}", {
       attribution: "Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"http://mapbox.com\">Mapbox</a>",
@@ -11,6 +13,7 @@ function init() {
       accessToken: API_KEY
     });
 
+
     var travelLayers = {
         nba: new L.LayerGroup(),
         nfl: new L.LayerGroup(),
@@ -18,7 +21,7 @@ function init() {
     };
 
     var map = L.map("travel-chart-area", {
-      center: [41.205333, -101.065578],
+      center: [36.87962060502676, -95.2733064227219],
       zoom: 4.5,
       layers: [
 
@@ -57,7 +60,7 @@ function init() {
 
     geo_url = "/api/nbageo";
     url = "/api/nba";
-    function callMouseover(teamdict, hometeamname, sport){ 
+    function callMouseover(teamdict, teamdict_home, hometeamname, sport){ 
         opacityDict = {}
         opacityDict1 = {}
         travelLayers[sport].eachLayer((layer) => {
@@ -88,12 +91,23 @@ function init() {
                     mWins = teamdict[layer.teamname]["wins"]
                     mLosses = teamdict[layer.teamname]["losses"]
                     teamString = hometeamname + " @ " + mOppoTeam + "<br>"
-                    winsString = "Wins: " + mWins + " Losses: " + mLosses + "<br>"
+                    winsString = "Away: " + mWins + "W " + mLosses + "L " 
+
+                    mWins_home = teamdict_home[layer.teamname]["wins"]
+                    mLosses_home = teamdict_home[layer.teamname]["losses"]
+                    winsString_home = "Home: " + mWins_home + "W " + mLosses_home + "L<br>"
 
                     var mPct = (mWins / (mWins + mLosses))
-                    var mPctrounded = Math.round(mPct * 100)/100
-                    var mPctstring = "Win Percentage: " + (Number.parseFloat(mPct).toPrecision(2)) + "%"
-                    layer.bindTooltip(teamString + winsString + mPctstring)
+                    var mPctrounded = (mPct * 100)
+                    var mPctstring = "Away Win %: " + (mPctrounded.toFixed(2)) + "%<br>"
+
+                    var mPctHome = (mWins_home / (mWins_home + mLosses_home))
+                    var mPctroundedHome = (mPctHome * 100)
+                    var mPctstringHome = "Home Win %: " + (mPctroundedHome.toFixed(2)) + "%<br><hr>"
+
+                    var differenceString = "Home / Away Split: <strong>" + (mPctroundedHome - mPctrounded).toFixed(2) + "</strong>%"
+
+                    layer.bindTooltip(teamString + winsString + winsString_home + mPctstring + mPctstringHome + differenceString)
                     layer.on('mouseover', function(e) {
         
                         var popup = e.target.getTooltip()
@@ -151,6 +165,11 @@ function init() {
         buildGraph();
 
     })
+    map.invalidateSize()
+
+    map.on("move", function() {
+        console.log(map.getCenter())
+    })
     function buildGraph(){
         sportnames = ['nba', 'nfl', 'mlb']
         d3.json(geo_url).then((geoData) => {
@@ -180,11 +199,11 @@ function init() {
                     }
                 })      
     
-                var teamIcon = new baseIcon({iconUrl: "/static/images/"+ sport + "logos/" + teamname + ".png", className: "team-icon"})
+                var teamIcon = new baseIcon({iconUrl: "/static/images/"+ sport + "logos/" + teamname + ".png", className: "icon-marker"})
                 teamIcon["teamname"] = teamname;
                 teamIcon["ident"] = "imgicon"
     
-                var teamMarker = L.marker(geoCoords, {icon: teamIcon});
+                var teamMarker = L.marker(geoCoords, {icon: teamIcon, className: "icon-marker"});
     
                 var cityLat = +geoData['geo'][sport][i].lat;
                 var cityLng = geoData['geo'][sport][i].lng;
@@ -200,15 +219,19 @@ function init() {
                             weight: 2,
                             opacity: 1,
                             color: "black",
-                            steps: 50
+                            steps: 50,
+                            className: "icon-line"
                         }).addTo(travelLayers[sport])
 
                 var endCircle = L.circle(lineEnd, 7500, {
                     color: "black",
                     className: "end-line",
                     fillColor: "black",
-                    fillOpacity: 1
+                    fillOpacity: 1,
+                    className: "icon-line"
                 }).addTo(travelLayers[sport])
+
+
     
                 teamMarker["teamname"] = teamname
     
@@ -244,7 +267,37 @@ function init() {
                     var testcoords = coordDict['Atlanta Hawks']
                     console.log(geoData['matchup'][sport])
                     console.log(geoData['matchup'][sport][hometeam])
-                    var teamdict = geoData['matchup'][sport][hometeam]
+                    var teamdict = geoData['matchup'][sport]['away'][hometeam]
+                    var teamdict_home = geoData['matchup'][sport]['home'][hometeam]
+                    recordMinMax = []
+                    recordMinMaxHome = []
+                    console.log(teamdict)
+                    allteams.forEach((recordname) => {
+
+                        console.log(teamdict[recordname])
+                        try {
+                            var recordPct = (teamdict[recordname].wins / (teamdict[recordname].wins + teamdict[recordname].losses)) * 100
+                            recordMinMax.push(recordPct)
+
+                            var recordPctHome = (teamdict_home[recordname].wins / (teamdict_home[recordname].wins + teamdict_home[recordname].losses)) * 100
+                            recordMinMaxHome.push(recordPctHome)
+                            }
+                        catch(error) {console.log("error")}
+                    })
+                    console.log(recordMinMax)
+
+                    awaymax = d3.max(recordMinMax)
+                    awaymin = d3.min(recordMinMax)
+
+                    homemax = d3.max(recordMinMaxHome)
+                    homemin = d3.min(recordMinMaxHome)
+
+                    z.domain([awaymin, awaymax])
+                    y.domain([homemin, homemax])
+
+                    console.log(awaymax)
+
+
                     allteams.forEach((instance) => {
     
                         if (hometeam != instance){
@@ -255,6 +308,9 @@ function init() {
                                 console.log(instance)
                                 var awaywins = teamdict[instance]['wins']
                                 var awaylosses = teamdict[instance]['losses']
+                                var homewins = teamdict_home[instance]['wins']
+                                var homelosses = teamdict_home[instance]['losses']
+                                var home_pct = (homewins / (homewins + homelosses)) * 100
                                 var pct = (awaywins / (awaywins + awaylosses)) * 100
                                 var pctrounded = Math.round(pct * 100)/100
                                 var pctstring = Number.parseFloat(pct).toPrecision(4)
@@ -268,7 +324,8 @@ function init() {
                                     className: "travel-arc"
                                 })
                                 var infoCircle = L.circle(test2, 150000, {
-                                    color: z(pct),
+                                    color: y(home_pct),
+                                    weight: 5,
                                     className: "travel-circle",
                                     fillColor: z(pct),
                                     fillOpacity: .7
@@ -304,7 +361,7 @@ function init() {
                             }catch(error) {console.log(error)}
                         }
                     })
-                callMouseover(teamdict, hometeam, sport)
+                callMouseover(teamdict, teamdict_home, hometeam, sport)
                 })
     
             teamMarker.addTo(travelLayers[sport])
@@ -320,6 +377,11 @@ function init() {
 
 
 
+d3.selectAll('.toast').style('opacity', 1)
+
+d3.select('#toast-button').on("click", function() {
+    d3.select('.toast').remove()
+})
 init()
 
 // create a layer for each team on

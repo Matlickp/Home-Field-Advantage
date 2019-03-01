@@ -564,7 +564,7 @@ function buildChart(sport, year, toggle) {
             .attr("x", chartWidth - 24)
             .attr("y", 9.5)
             .attr("dy", "0.32em")
-            .text(function(d) { return d; })
+            .text(function(d) { if (d == 'home_pct') {return "Home"} if (d == 'away_pct') {return "Away"} })
             .style("opacity", 0)
             .transition()
             .delay(650)

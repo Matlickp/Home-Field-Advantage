@@ -66,7 +66,7 @@ def api_mlb():
     mlb_json = []
     for record in mlb_data:
         mlb_json.append({'team': record['TEAM'], 'year': record['YEAR'], 'home_win': record['HOME W'], 'home_loss': record['HOME L'],
-            'away_win': record['AWAY W'], 'away_loss': record['AWAY L'], 'home_pct': record['HOME %'], 'away_pct': record['AWAY %']})
+            'away_win': record['AWAY W'], 'away_loss': record['AWAY L'], 'home_pct':  round(record['HOME %'], 2), 'away_pct':  round(record['AWAY %'], 2)})
     mlbs = [{'reg': mlb_json}]
     return jsonify((mlbs))
 
@@ -77,15 +77,21 @@ def api_nbageo():
     nfl_geo_data = mongo.db.nflcoords.find({}, {'_id': False})
     mlb_geo_data = mongo.db.mlbcoords.find({}, {'_id': False})
     matchup_data = mongo.db.nbamatchupdict.find({}, {'_id': False})
+    matchup_data_home = mongo.db.nbamatchupdicthome.find({}, {'_id': False})
     nfl_matchup_data = mongo.db.nflmatchupdict.find({}, {'_id': False})
+    nfl_matchup_data_home = mongo.db.nflmatchupdicthome.find({}, {'_id': False})
     mlb_matchup_data = mongo.db.mlbmatchupdict.find({}, {'_id': False})
+    mlb_matchup_data_home = mongo.db.mlbmatchupdicthome.find({}, {'_id': False})
 
     geo_json = []
     nfl_geo_json = []
     mlb_geo_json = []
     matchup_json = {}
+    matchup_json_home = {}
     nfl_matchup_json = {}
+    nfl_matchup_json_home = {}
     mlb_matchup_json = {}
+    mlb_matchup_json_home = {}
 
     for record in geo_data:
         geo_json.append({'city': record['CITY'], 'state': record['STATE'], 'lat': record['LAT'], 'lng': record['LNG'] })
@@ -131,12 +137,31 @@ def api_nbageo():
             team_dict[team] = record[team]
             matchup_json[team] = record[team]
 
+    for record in matchup_data_home:
+        for team in team_names:
+            team_dict = {}
+            team_dict[team] = record[team]
+            matchup_json_home[team] = record[team]
+    awayhome_dict = {}
+    awayhome_dict['home'] = matchup_json_home
+    awayhome_dict ['away'] = matchup_json
+
     for record in nfl_matchup_data:
 
         for team in nfl_team_names:
             team_dict = {}
             team_dict[team] = record[team]
             nfl_matchup_json[team] = record[team]
+
+    for record in nfl_matchup_data_home:
+        for team in nfl_team_names:
+            team_dict = {}
+            team_dict[team] = record[team]
+            nfl_matchup_json_home[team] = record[team]
+
+    nfl_awayhome_dict = {}
+    nfl_awayhome_dict['home'] = nfl_matchup_json_home
+    nfl_awayhome_dict ['away'] = nfl_matchup_json
 
     for record in mlb_matchup_data:
  
@@ -145,9 +170,19 @@ def api_nbageo():
             team_dict[team] = record[team]
             mlb_matchup_json[team] = record[team]
 
+    for record in mlb_matchup_data_home:
+        for team in mlb_team_names:
+            team_dict = {}
+            team_dict[team] = record[team]
+            mlb_matchup_json_home[team] = record[team]
+
+    mlb_awayhome_dict = {}
+    mlb_awayhome_dict['home'] = mlb_matchup_json_home
+    mlb_awayhome_dict ['away'] = mlb_matchup_json 
+
  
 
-    totaldict = {'nba': matchup_json, 'nfl': nfl_matchup_json, 'mlb': mlb_matchup_json}
+    totaldict = {'nba': awayhome_dict, 'nfl': nfl_awayhome_dict, 'mlb': mlb_awayhome_dict}
 
     totalgeo = {'nba': geo_json, 'nfl': nfl_geo_json, 'mlb': mlb_geo_json}
     totalicongeo = {'nba': geo_icon_json, 'nfl': nfl_geo_icon_json, 'mlb': mlb_geo_icon_json}
