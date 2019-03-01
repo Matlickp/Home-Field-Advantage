@@ -23,6 +23,7 @@ Data - Contains csv files and jupyter notebooks.  notebooks used to push data to
 Flask
 
   -templates folder contains html pages
+  
   -static folder has js files that correspond to the html pages.  also contains various d3/leaflet extension files (draw geodesic lines       etc.)
   -app.py used to pull data from mongo_db
     /api/<sport> (nba, nfl, mlb) provide team data by season
