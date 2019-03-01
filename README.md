@@ -17,9 +17,11 @@ MLB -
 OVERVIEW:
 
 Folders:
+
 Data - Contains csv files and jupyter notebooks.  notebooks used to push data to mongodb and to web scrape for team logos.  mongodb folder contains a dump that can be used to restore the db (named sportsDB)
 
 Flask
+
   -templates folder contains html pages
   -static folder has js files that correspond to the html pages.  also contains various d3/leaflet extension files (draw geodesic lines       etc.)
   -app.py used to pull data from mongo_db
