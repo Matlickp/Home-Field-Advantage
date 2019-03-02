@@ -30,9 +30,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a href="{{url_for('datapage')}}" class="nav-link">Data</a>
-                </li>
                 <li class="nav-item" id="vis-list">
                     <a href="" data-toggle="dropdown" class="nav-link dropdown-toggle" id="viz-link">Visualizations</a>
                     <div class="dropdown-menu dropdown-menu-right" style="background-color: white !important; border:0px">
@@ -41,6 +38,9 @@
                             <a href="{{url_for('travel')}}" class="dropdown-item">Map - Team Matchups</a>
                         </div>
                     </div>
+                </li>
+                <li class="nav-item">
+                        <a href="{{url_for('datapage')}}" class="nav-link">Data</a>
                 </li>
             </ul>
         </div>

@@ -3,8 +3,8 @@
 <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel" style="margin-bottom: 50px">
       <div class="carousel-inner">
         <div class="carousel-caption d-none d-md-block">
-            <h1 style="font-size: 5em">First slide label</h1>
-            <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+            <h1 style="font-size: 5em">HOME FIELD ADVANTAGE</h1>
+            <h2>Is it a thing?</h2>
         </div>
         <div class="carousel-item active">
             <img src="{{url_for('static', filename='images/bball-court.png')}}" class="d-block w-100" alt="" style="object-fit: cover; height: 500px">
@@ -22,37 +22,25 @@
             <div class="row">
                 <div class="col-md-8 offset-2 border-left border-right">
                     <h3 class="display-5">Project Overview</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe minus voluptate beatae, voluptates, ab commodi ipsam dolorem magnam architecto excepturi, nesciunt blanditiis. Ratione asperiores, perferendis eum, vel explicabo minima enim.</p>
-                    <p>Molestiae voluptates possimus repellat exercitationem doloribus, suscipit dolorem, nobis consectetur rerum. Sed, error veniam! Natus non molestiae, quos qui, aspernatur labore. Eveniet adipisci beatae iure maiores assumenda et labore error.</p>
-                    <br><br><br>
+                    <p>Home-field advantage is a long-running idea in sports. The home team knows the turf, they’ve got more fans in the stands, and they got to sleep in their own beds rather than traveling possibly thousands of miles and staying in a hotel. But is home-field advantage really all it’s cracked up to be?</p>
+                    <p>The purpose of this project was to gather data on the NBA, NFL, and the MLB and determine whether teams won more games at home or on the road and if it was significant or not. </p>
+                    <br>
+                    <br>
+                    <br>
 
                     <h3>Data</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo sapiente labore non et, autem error doloremque delectus ex, quas, quis facere modi, repellendus expedita cupiditate laudantium sit dolore eum aliquid.</p>
-                    <p>Mollitia a voluptas quas nemo quaerat provident eum corporis pariatur autem, reiciendis molestias totam expedita non beatae nulla modi amet repudiandae sunt aliquid quod ipsam ex cum fugiat! Itaque, quo!</p>
-                    <p>Nobis, perspiciatis. Culpa voluptate cumque, laboriosam dolor totam fuga recusandae nostrum atque possimus officia voluptas omnis esse iste et voluptatum! Repellendus a earum amet rerum cumque eos voluptatem adipisci inventore.</p>
-                    <br><br><br>
+                    <p>NBA - nba_api.stats</p>
+                    <p>NFL - Kaggle Dataset</p>
+                    <p>MLB - Kaggle Dataset</p>
+                    <br>
+                    <br>
+                    <br>
                     <h3>Methods</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident, harum perspiciatis nisi ullam ipsum pariatur eligendi iusto inventore esse voluptatibus, cum rerum quo blanditiis a molestiae enim veritatis eius omnis.</p>
-                    <p>Quidem laborum quibusdam totam tenetur sapiente adipisci libero sequi natus! Ut autem ipsa ratione atque optio eum aperiam fugit, blanditiis vel perspiciatis hic dolore, iure corporis, qui temporibus dolorum ducimus.</p>
-                    <p>Quasi in at amet explicabo debitis sed aliquid quod ipsum unde repellendus distinctio eaque, aut, natus sapiente, eveniet dolorum, nam? Nisi laborum, accusamus vel facere in fuga, reiciendis placeat et.</p>
+                    <p>NBA - Using the API listed above, a json file was pulled for NBA game stats from 2012 to 2017. That data was then cleaned and formatted in a way that is easy to replicate, then sent to MongoDB.</p>
+                    <p>NFL - The Kagle dataset provied game stats for all teams from 2012 to 2016. This data was then cleaned and formatted in the same way the NBA data was and sent to MongoDB.</p>
+                    <p>MLB - This Kaggle dataset orovided game information dating back to 1871 but only seasons 2012 to 2017 were used. This was then put into the same format as the others and sent to MongoDB. </p>
                     <br><br><br>
 
-                    <div class="card border-secondary mb-3">
-                      <!-- <div class="card-header">Header</div> -->
-                      <div class="card-body text-secondary">
-                        <h5 class="card-title">Project Overview</h5>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora consequatur sequi qui non obcaecati quisquam nihil nesciunt? Aut reiciendis ullam facilis assumenda, pariatur dicta facere, vitae enim, natus dolor earum.</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem cum hic dolor dolorem alias praesentium quibusdam, quis, mollitia porro nemo repellendus blanditiis velit similique quae vel veritatis commodi eaque laborum.</p>
-
-                        <h5 class="card-title">Data</h5>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora consequatur sequi qui non obcaecati quisquam nihil nesciunt? Aut reiciendis ullam facilis assumenda, pariatur dicta facere, vitae enim, natus dolor earum.</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem cum hic dolor dolorem alias praesentium quibusdam, quis, mollitia porro nemo repellendus blanditiis velit similique quae vel veritatis commodi eaque laborum.</p>
-
-                        <h5 class="card-title">Methods</h5>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora consequatur sequi qui non obcaecati quisquam nihil nesciunt? Aut reiciendis ullam facilis assumenda, pariatur dicta facere, vitae enim, natus dolor earum.</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem cum hic dolor dolorem alias praesentium quibusdam, quis, mollitia porro nemo repellendus blanditiis velit similique quae vel veritatis commodi eaque laborum.</p>
-                      </div>
-                    </div>
             </div>
         </div>
     </div>
